@@ -1,0 +1,1 @@
+/usr/bin/c++  -O3 -DNDEBUG  -rdynamic CMakeFiles/example-001.dir/example-001.cpp.o  -o example-001 -Wl,-rpath,/home/hugo/Documents/projets/collectif-robots/build/src ../src/libcollectif_robots_sim.so 

@@ -1,0 +1,1 @@
+/usr/bin/c++ -fPIC   -shared -Wl,-soname,libsupport_simu.so -o libsupport_simu.so CMakeFiles/support_simu.dir/board.cpp.o 
