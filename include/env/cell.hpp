@@ -20,6 +20,7 @@ class Cell {
         char repr();
 
         bool isTraversable();
+        bool isEmpty();
 
         
 

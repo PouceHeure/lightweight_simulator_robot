@@ -1,5 +1,5 @@
 #pragma once 
 
-class Instruction {
+struct Instruction {
 
 };

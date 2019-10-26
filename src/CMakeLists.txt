@@ -13,7 +13,9 @@ add_library(collectif_robots_sim
   element.cpp
   scheduler.cpp
   robot.cpp
-  cell.cpp)
+  cell.cpp
+  ultrasonic_sensor.cpp
+  i_sensor.cpp)
 
 install (TARGETS collectif_robots_sim
         DESTINATION lib)

@@ -3,7 +3,8 @@
 #include "env/physic.hpp"
 #include "instruction/instruction.hpp"
 
-class MoveInstruction : public Instruction {
-    Direction direction;    
-    int nb_cells; 
+struct MoveInstruction : public Instruction {
+    public: 
+        Direction direction;    
+        int nb_cells; 
 };

@@ -7,6 +7,7 @@ UltrasonicSensor::UltrasonicSensor(int _freq,boost::function<void(int)> _callbac
 };      
 
 
-void run(Board<Cell> &board){
-
+void UltrasonicSensor::run(Board<Cell> &board, Point2D<int> &current_position){
+   int result = board.spreadSignal(direction_watching,current_position);
+   this->callback(result);
 }

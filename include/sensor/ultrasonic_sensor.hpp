@@ -11,5 +11,5 @@ class UltrasonicSensor : public Sensor<int> {
     public:
         UltrasonicSensor(int _freq,boost::function<void(int)> _callback,Direction _direction_watching);
 
-        virtual void run(Board<Cell> board);
+        virtual void run(Board<Cell> &board,Point2D<int> &current_position);
 };

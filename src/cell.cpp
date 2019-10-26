@@ -32,4 +32,8 @@ bool Cell::isTraversable(){
     return element->getIsTraversable();
 }
 
+bool Cell::isEmpty(){
+    return element == nullptr;
+}
+
 

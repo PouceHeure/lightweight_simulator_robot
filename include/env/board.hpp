@@ -8,6 +8,10 @@
 #include "env/cell.hpp"
 #include "env/physic.hpp"
 
+#include <cstdlib>
+#include <iostream>
+#include <ctime>
+
 template<typename T> 
 using  WorldPtr = std::vector<std::vector<T*>>;
 template<typename T> 
@@ -31,7 +35,7 @@ class Board{
         
         int spreadSignal(Direction direction,Point2D<int> emission_point, Point2D<int> current_point);
         void updateSignalDirection(Direction &direction);
-        void updateSignalPosition(const Direction& direction,Point2D<int> &point);
+       
 
         Board(int _width,int _height);
 
@@ -41,18 +45,21 @@ class Board{
         
         void fill(T* _value_ref);
         void fill();
+        void fillRandom(int occurence,Element* _value_ref);
         void load();
         void save();
         
         void update(int i,int j,Element* _value);
         void update(int i,int j,T* _value);
+        void update(Point2D<int> _position, Element* _value);
         void updateBorder(Element* _value);
+        void updatePoint(const Direction& direction,Point2D<int> &point);
         
         void display();
         void displaySave();
 
         int spreadSignal(Direction direction,Point2D<int> emission_point);
-        void moveRobot(Direction direction)
+        bool moveRobot(Point2D<int> current, Point2D<int> target);
 
         
 };
@@ -154,6 +161,11 @@ void Board<T>::update(int i,int j,Element* _value){
 }
 
 template<typename T>
+void Board<T>::update(Point2D<int> _position,Element* _value){
+    this->update(_position.getX(),_position.getY(),_value);
+}
+
+template<typename T>
 void Board<T>::updateBorder(Element* _value){
     for(int i=0;i<this->lines;i++){
         for(int j=0;j<this->cols;j++){
@@ -204,7 +216,7 @@ void Board<T>::updateSignalDirection(Direction &direction){
 }
 
 template<typename T>
-void Board<T>::updateSignalPosition(const Direction& direction,Point2D<int> &point){
+void Board<T>::updatePoint(const Direction& direction,Point2D<int> &point){
     switch (direction)
         {
             case Direction::north:
@@ -222,6 +234,20 @@ void Board<T>::updateSignalPosition(const Direction& direction,Point2D<int> &poi
             case Direction::west:
                 point.appendY(+1);
                 break;
+    }
+}
+
+template<typename T>
+void Board<T>::fillRandom(int occurence,Element* _value_ref){
+    int cell_filled = 0;
+    while(cell_filled < occurence){
+        int randI = rand()%(this->lines -1) + 1;
+        int randJ = rand()%(this->cols -1) + 1;
+        std::cout << "I: " << randI << "J: " << randJ << std::endl;
+        if(getElementAt(this->matrix,randI,randJ)->isEmpty()){
+            this->update(randI,randJ,_value_ref);
+            cell_filled++;
+        }
     }
 }
 
