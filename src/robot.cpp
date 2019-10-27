@@ -24,11 +24,13 @@ std::string Robot::getName(){
     return this->name;
 }
 
-void Robot::run(Board<Cell> board,Point2D<int> current_robot_position){
+void Robot::run(int ticks, Board<Cell> board,Point2D<int> current_robot_position){
     //read sensors 
     std::vector<ISensor*>::iterator it_sensors;
     for (it_sensors = sensors.begin() ; it_sensors != sensors.end(); it_sensors++){
-       (*it_sensors)->run(board,current_robot_position);
+        if(ticks % (*it_sensors)->getFreq() == 0){
+            (*it_sensors)->run(board,current_robot_position);
+        }
     }
 
     //apply callbacks 

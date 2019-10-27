@@ -83,7 +83,6 @@ int main(int argc,char** argv){
     board->fill();
     board->updateBorder(as);
     board->fillRandom(120,as);
-
     
 
     Scheduler* scheduler = new Scheduler();

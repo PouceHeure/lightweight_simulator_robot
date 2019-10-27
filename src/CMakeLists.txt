@@ -15,7 +15,16 @@ add_library(collectif_robots_sim
   robot.cpp
   cell.cpp
   ultrasonic_sensor.cpp
-  i_sensor.cpp)
+  i_sensor.cpp
+  
+  i_publisher.cpp
+  i_subscriber.cpp
+  i_topic.cpp
+  interacter.cpp
+  handle_communication.cpp
+
+  
+  )
 
 install (TARGETS collectif_robots_sim
         DESTINATION lib)

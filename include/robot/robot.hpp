@@ -37,7 +37,7 @@ class Robot: public Element{
         std::string getName();
         int getId();
         
-        virtual void run(Board<Cell> board,Point2D<int> current_robot_position);
+        virtual void run(int ticks,Board<Cell> board,Point2D<int> current_robot_position);
 
         void addInstruction(MoveInstruction instruction);
         void attachUltrasonicSensor(UltrasonicSensor* utltrasonic);

@@ -35,11 +35,12 @@ void Scheduler::run(){
     if(mode_function == nullptr){
         throw std::invalid_argument("Mode isn't attached !");
     }
+    int ticks = 0;
     while(isOk){
         std::system("clear");
         std::map<Robot*,Point2D<int>>::iterator it_robot;
         for(it_robot = robots.begin();it_robot != robots.end();++it_robot){
-            it_robot->first->run(*board,it_robot->second);
+            it_robot->first->run(ticks++,*board,it_robot->second);
         }
         board->display();
         mode_function();
