@@ -8,17 +8,22 @@ file(
 
 add_library(collectif_robots_sim
   SHARED
+  # scheduler file 
+  scheduler.cpp
+
+  # element files 
   board.cpp
   wall.cpp
+  resource.cpp
   element.cpp
-  scheduler.cpp
   robot.cpp
   cell.cpp
+
+  # sensor files 
   ultrasonic_sensor.cpp
   i_sensor.cpp
   
-  i_publisher.cpp
-  i_subscriber.cpp
+  # communication files 
   i_topic.cpp
   interacter.cpp
   handle_communication.cpp

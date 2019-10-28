@@ -3,6 +3,7 @@
 
 #include "env/board.hpp"
 #include "scheduler.hpp"
+#include "element/resource.hpp"
 #include "element/element.hpp"
 #include "element/wall.hpp"
 #include "env/cell.hpp"
@@ -83,10 +84,12 @@ int main(int argc,char** argv){
     HandleCommunication* hc = new HandleCommunication();
     Board<Cell>* board = Board<Cell>::getSingleton(NB_LINES,NB_COLS);
 
-    Wall* as = new Wall();
+    Wall* wall = new Wall();
+    Resource* resource = new Resource();
     board->fill();
-    board->updateBorder(as);
-    board->fillRandom(20,as);
+    board->updateBorder(wall);
+    board->fillRandom(20,wall);
+    board->fillRandom(20,resource);
     
     Scheduler* scheduler = new Scheduler();
     scheduler->attachMode(Mode::automatic);
