@@ -50,3 +50,39 @@ bool Board<Cell>::moveRobot(Point2D<int> current, Point2D<int> target){
     }
     return target_is_free;
 }
+
+template<>
+std::vector<std::vector<Element*>> Board<Cell>::spreadDetection(int radius,Point2D<int> emission_point){
+    std::vector<std::vector<Element*>> elements;
+    Point2D<int> begin_point = emission_point;
+    begin_point.appendX(-radius);
+    begin_point.appendY(-radius);
+    Point2D<int> end_point = emission_point;
+    end_point.appendX(+radius);
+    end_point.appendY(+radius);
+
+    //init vector
+
+    for(int i = 0; i < 2*radius + 1; i++)
+    {
+        std::vector<Element*> v_cols_ptr(2*radius+1);
+        elements.push_back(v_cols_ptr);
+    }
+
+    int i_elements = 0;
+    int j_elements = 0;
+    for(int i= begin_point.getX();i<=end_point.getX();i++){
+        j_elements = 0;
+        for(int j= begin_point.getY();j<=end_point.getY();j++){
+            if(i >= 0 && i < lines && j >= 0 && j < cols){
+                Cell* current_cell = getElementAt(matrix,i,j);
+                if(!current_cell->isEmpty()){
+                    elements.at(i_elements).at(j_elements) = current_cell->getElement();
+                }
+            }
+            j_elements++;
+        }
+        i_elements++;
+    }
+    return elements;
+}

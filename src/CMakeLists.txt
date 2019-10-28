@@ -21,6 +21,7 @@ add_library(collectif_robots_sim
 
   # sensor files 
   ultrasonic_sensor.cpp
+  detector_sensor.cpp
   i_sensor.cpp
   
   # communication files 

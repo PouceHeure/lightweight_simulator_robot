@@ -3,7 +3,7 @@
 
 #include "scheduler.hpp"
 
-unsigned int Scheduler::TIME_SLEEP_MS = 100; 
+unsigned int Scheduler::TIME_SLEEP_MS = 500; 
 
 Scheduler::Scheduler():isOk(true){
 
@@ -38,11 +38,13 @@ void Scheduler::run(){
     int ticks = 0;
     while(isOk){
         std::system("clear");
+        //display current map:
+        board->display();
+
         std::map<Robot*,Point2D<int>>::iterator it_robot;
         for(it_robot = robots.begin();it_robot != robots.end();++it_robot){
             it_robot->first->run(ticks++,*board,it_robot->second);
         }
-        board->display();
         mode_function();
     }    
 }

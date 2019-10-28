@@ -8,6 +8,7 @@
 #include "element/wall.hpp"
 #include "env/cell.hpp"
 #include "sensor/ultrasonic_sensor.hpp"
+#include "sensor/detector_sensor.hpp"
 
 #include <cstdlib>
 #include <iostream>
@@ -33,12 +34,19 @@ class MyRobot : public Robot {
         Subscriber<int>* sub_ultra;
         Publisher<int>* pub_ultra;
 
+        int* ultrasonic_south_value; 
+
         void callbackRobot(){
             MoveInstruction move_instruction = MoveInstruction();
             Direction new_direction = static_cast<Direction>(std::rand() % 4);
             move_instruction.direction = new_direction;
             move_instruction.nb_cells = 1;
             this->addInstruction(move_instruction);
+        }
+
+        void callbackRobotWatchUltrasonicSouthValue(){
+            std::cout << "robot:" << this->getName();
+            std::cout << " ultrasonic_south_value:" << *ultrasonic_south_value << std::endl;
         }
 
         void callBackSensor(int value,std::string _direction){
@@ -56,18 +64,47 @@ class MyRobot : public Robot {
             std::cout << std::endl; 
         }
 
+        void callBackDetector(std::vector<std::vector<Element*>> value,int radius){
+            std::cout << "robot:" << this->getName() << " perception:"<< std::endl;
+            for(int i=0;i<2*radius +1;i++){
+                std::cout << "               |";
+                for(int j=0;j<2*radius +1;j++){
+                    if(value.at(i).at(j) != nullptr){
+                        std::cout << value.at(i).at(j)->repr();
+                    }else{
+                        std::cout << " ";
+                    }
+                    std::cout << "|";
+                }
+                std::cout << std::endl;
+            }
+        }
+
     public:     
-        MyRobot(HandleCommunication &hc, std::string _name,std::string pub_topic,std::string sub_topic):Robot(_name)
+        MyRobot(HandleCommunication &hc, std::string _name,std::string pub_topic,std::string sub_topic,int _radius):Robot(_name)
         {
             // add callback robot  
             auto callback = std::bind(&MyRobot::callbackRobot,this);
             this->attachCallBack(callback);
+            auto callbackSouth = std::bind(&MyRobot::callbackRobotWatchUltrasonicSouthValue,this);
+            this->attachCallBack(callbackSouth);
 
             // attach ultrasonic 
             UltrasonicSensor* ultrasonicSensorNorth = new UltrasonicSensor(1,
                                     boost::bind(&MyRobot::callBackSensor,this,_1,"North"),
                                     Direction::north);
-            this->attachUltrasonicSensor(ultrasonicSensorNorth);
+            this->attachSensor(ultrasonicSensorNorth);
+
+            UltrasonicSensor* ultrasonicSensorSouth = new UltrasonicSensor(1,
+                                    ultrasonic_south_value,
+                                    Direction::south);
+            this->attachSensor(ultrasonicSensorSouth);
+
+            DetectorSensor* detectorSensor = new DetectorSensor(1,
+                                    boost::bind(&MyRobot::callBackDetector,this,_1,_radius),
+                                    _radius);
+            this->attachSensor(detectorSensor);
+
 
             // attach publisher
             pub_ultra = hc.createPublisher<int>(pub_topic);
@@ -94,8 +131,8 @@ int main(int argc,char** argv){
     Scheduler* scheduler = new Scheduler();
     scheduler->attachMode(Mode::automatic);
     scheduler->attachBoard(board);
-    scheduler->addRobot(new MyRobot(*hc,"bob","topic_0","topic_1"),Point2D<int>(I_ROBOT_BOB,J_ROBOT_BOB));
-    scheduler->addRobot(new MyRobot(*hc,"bib","topic_1","topic_0"),Point2D<int>(I_ROBOT_BIB,J_ROBOT_BIB));
+    scheduler->addRobot(new MyRobot(*hc,"bob","topic_0","topic_1",1),Point2D<int>(I_ROBOT_BOB,J_ROBOT_BOB));
+    scheduler->addRobot(new MyRobot(*hc,"bib","topic_1","topic_0",2),Point2D<int>(I_ROBOT_BIB,J_ROBOT_BIB));
 
     scheduler->run();
 
