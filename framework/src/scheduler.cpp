@@ -3,12 +3,12 @@
 
 #include "scheduler.hpp"
 
-unsigned int Scheduler::TIME_SLEEP_MS = 500; 
+unsigned int Scheduler::TIME_SLEEP_MS = 30; 
 
 Scheduler::Scheduler():isOk(true){
 
-}
 
+}
 void Scheduler::modeAuto(){
    auto sleep_duration = std::chrono::milliseconds(Scheduler::TIME_SLEEP_MS);
    std::this_thread::sleep_for(sleep_duration); 
@@ -38,14 +38,29 @@ void Scheduler::run(){
     int ticks = 0;
     while(isOk){
         std::system("clear");
+        std::cout << ticks << std::endl;
         //display current map:
+        std::cout << "MAP REFERENCE" << std::endl;
         board->display();
-
+        std::cout << "MAP ATTRACTIF FIELD" << std::endl;
+        board->displayAttractifField();
+        std::cout << "MAP CREATED" << std::endl;
         std::map<Robot*,Point2D<int>>::iterator it_robot;
         for(it_robot = robots.begin();it_robot != robots.end();++it_robot){
-            it_robot->first->run(ticks++,*board,it_robot->second);
+            it_robot->first->run(ticks,*board,it_robot->second);
         }
+        std::vector<boost::function<void(void)>>::iterator it_cb;
+        for(it_cb = callbacks.begin();it_cb != callbacks.end();++it_cb){
+            (*it_cb)();
+        }
+
+        std::vector<IRecorder*>::iterator it_recorder;
+        for(it_recorder = recorders.begin();it_recorder != recorders.end();++it_recorder){
+            (*it_recorder)->record(ticks,this->board);
+        }
+
         mode_function();
+        ticks++; //update clock 
     }    
 }
 
@@ -71,12 +86,18 @@ void Scheduler::addRobot(Robot* robot, Point2D<int> position){
     board->update(position,robot);
 }
 
-// void Scheduler::addRobot(Robot* robot,int i, int j){
-//     Point2D<int> 
-//     this->addRobot()
-// }
 
 void Scheduler::attachBoard(Board<Cell>* _board){
     this->board = _board;
 }
+
+void Scheduler::attachCallback(boost::function<void(void)> _callback){
+    callbacks.push_back(_callback);
+}
+
+
+void Scheduler::attachRecorder(IRecorder* _recorder){
+    recorders.push_back(_recorder);
+}
+
 

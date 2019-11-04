@@ -8,12 +8,18 @@ class Cell {
 
     private: 
         Point2D<int> coord;
-        Element* element; 
+        Element* element;
+
+        int attractif_score;
 
     public: 
+        Cell();
         Cell(Point2D<int> _coord);
 
         Element* getElement();
+        Point2D<int> getCoord();
+        int getAttractifScore();
+
         Element* detachElement();
         bool attachElement(Element* _element);
 
@@ -22,6 +28,5 @@ class Cell {
         bool isTraversable();
         bool isEmpty();
 
-        
-
+        void updateAttractifScore(int attractif);
 };

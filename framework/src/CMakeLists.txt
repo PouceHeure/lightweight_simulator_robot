@@ -1,3 +1,5 @@
+SET(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} "-std=c++11 -pthread")
+
 include_directories (${CMAKE_SOURCE_DIR}/include)
 
 file(
@@ -12,11 +14,16 @@ add_library(collectif_robots_sim
   scheduler.cpp
 
   # element files 
-  board.cpp
   wall.cpp
   resource.cpp
   element.cpp
+  unknown.cpp
+
+  # robot files 
   robot.cpp
+  
+  # env files 
+  board.cpp
   cell.cpp
 
   # sensor files 
@@ -29,8 +36,15 @@ add_library(collectif_robots_sim
   interacter.cpp
   handle_communication.cpp
 
-  
+  # recorder files 
+  i_recorder.cpp
+  server.cpp
+  payload.cpp
   )
+
+find_package (Threads)
+include_directories(${PYTHON_INCLUDE_DIRS})
+target_link_libraries(collectif_robots_sim ${CMAKE_THREAD_LIBS_INIT})  
 
 install (TARGETS collectif_robots_sim
         DESTINATION lib)

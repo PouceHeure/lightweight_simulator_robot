@@ -11,6 +11,10 @@
 #include "element/element.hpp"
 #include "robot/robot.hpp"
 
+#include "recorder/recorder.hpp"
+
+
+
 enum Mode {
     automatic = 0,
     manuel
@@ -24,6 +28,9 @@ class Scheduler {
         bool isOk;
         Mode mode_current;
         boost::function<void(void)> mode_function;
+
+        std::vector<boost::function<void(void)>> callbacks;
+        std::vector<IRecorder*> recorders;
 
         void modeAuto();
         void modeManuel();
@@ -40,6 +47,8 @@ class Scheduler {
         void run();
         void attachMode(Mode mode);
         void attachBoard(Board<Cell>* _board);
+        void attachRecorder(IRecorder* _recorder);
+        void attachCallback(boost::function<void(void)> _callback);
 
         void requestMoveRobot(Robot* robot, MoveInstruction* move_instruction);
 

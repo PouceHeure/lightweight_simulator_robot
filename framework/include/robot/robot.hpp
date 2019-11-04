@@ -37,10 +37,28 @@ class Robot: public Element{
         std::string getName();
         int getId();
         
+        /**
+         * @brief Method called at each tick 
+         * 
+         * @param ticks current tick simulation 
+         * @param board board 
+         * @param current_robot_position current position 
+         */
         virtual void run(int ticks,Board<Cell> board,Point2D<int> current_robot_position);
 
+        /**
+         * @brief Add new intruction 
+         * 
+         * @param instruction 
+         */
         void addInstruction(MoveInstruction instruction);
-        void attachUltrasonicSensor(UltrasonicSensor* utltrasonic);
+
+        /**
+         * @brief 
+         * 
+         * @param sensor 
+         */
+        void attachSensor(ISensor* sensor);
         void attachCallBack(boost::function<void(void)>);
 
         void attachRequestMoveMethod(boost::function<void(Robot*,MoveInstruction*)> request);

@@ -1,9 +1,23 @@
 #include "env/cell.hpp"
+#include "element/unknown.hpp"
 
-Cell::Cell(Point2D<int> _coord):coord(_coord),element(nullptr){}
+Cell::Cell(Point2D<int> _coord):
+attractif_score(0),coord(_coord),element(nullptr){}
+
+Cell::Cell():Cell(Point2D<int>(-1,-1)){
+    attachElement(new Unknown()); 
+}
 
 Element* Cell::getElement(){
     return this->element;
+}
+
+Point2D<int> Cell::getCoord(){
+    return this->coord;
+}
+
+int Cell::getAttractifScore(){
+    return this->attractif_score;
 }
 
 Element* Cell::detachElement(){
@@ -34,6 +48,11 @@ bool Cell::isTraversable(){
 
 bool Cell::isEmpty(){
     return element == nullptr;
+}
+
+void Cell::updateAttractifScore(int _attractif_score)
+{
+    attractif_score += _attractif_score ;
 }
 
 

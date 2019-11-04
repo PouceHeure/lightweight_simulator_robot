@@ -68,9 +68,6 @@ void Robot::attachRequestMoveMethod(boost::function<void(Robot*,MoveInstruction*
     request_move_method = request;
 }
 
-void Robot::attachUltrasonicSensor(UltrasonicSensor* _ultrasonic_sensor){
-    this->sensors.push_back(_ultrasonic_sensor);
-}
 
 void Robot::attachSensor(ISensor* sensor){
     this->sensors.push_back(sensor);
