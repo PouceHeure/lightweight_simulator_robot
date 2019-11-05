@@ -12,11 +12,12 @@ class LsrProtocolRecord:
 	
 	This class can wrap any property, as the record structure is not totally fixed yet.
 	"""
-	def __init__(self, **kwargs):
+	def __init__(self, _tick, _type, _value):
 		"""Constructor for LsrProtocolRecord class
 		"""
-		for key in kwargs:
-			setattr(self, key, kwargs[key])
+		self.tick = _tick
+		self.type = _type
+		self.value = _value
 
 	def __repr__(self):
 		"""Produce the string representation of the record
@@ -28,11 +29,11 @@ class LsrProtocolHeader:
 	
 	This class can wrap any property, as the header structure is not totally fixed yet.
 	"""
-	def __init__(self, **kwargs):
+	def __init__(self, _data_size, _data_type):
 		"""Constructor for LsrProtocolHeader class
 		"""
-		for key in kwargs:
-			setattr(self, key, kwargs[key])
+		self.data_size = _data_size
+		self.data_type = _data_type
 
 	def __repr__(self):
 		"""Produce the string representation of the header
@@ -76,15 +77,15 @@ class LsrProtocolParser:
 	def check_ping_packet(self, record, reference):
 		"""Verify ping packet integrity
 		"""
-		return record.value == reference and record.c_type == c_ubyte
+		return record.value == reference and record.type == c_ubyte
 	
 	def build_packet(self, value, tick, c_type):
 		"""Build data packet from value, tick, and ctype
 		"""
 		data_type = self.type_to_id[c_type]
-		record = LsrProtocolRecord(tick=tick, c_type=c_type, value=value)
+		record = LsrProtocolRecord(tick, c_type, value)
 		raw_record = self.rawdata_from_record(record)
-		header = LsrProtocolHeader(data_size=len(raw_record), data_type=data_type)
+		header = LsrProtocolHeader(len(raw_record), data_type)
 		raw_header = self.rawdata_from_header(header)
 		packet = raw_header + raw_record
 		return packet
@@ -99,7 +100,7 @@ class LsrProtocolParser:
 	def rawdata_from_record(self, record):
 		"""Convert LsrProtocolRecord to raw data (before sending it to server)
 		"""
-		type = record.c_type
+		type = record.type
 		type_format = type._type_
 		if type == c_char_p:
 			type_format = "%ds" % len(record.value)
@@ -111,7 +112,7 @@ class LsrProtocolParser:
 		"""Convert raw data to LsrProtocolHeader (after receiving it from the server)
 		"""
 		data_type, data_size = struct.unpack(self.header_format, header_data)
-		header = LsrProtocolHeader(data_size=data_size, data_type=data_type)
+		header = LsrProtocolHeader(data_size, data_type)
 		logger.debug("Decoded/Received header : %s from %s" % (header, str(binascii.hexlify(header_data))))
 		return header
 
@@ -123,6 +124,6 @@ class LsrProtocolParser:
 		if type == c_char_p:
 			type_format = "%ds" % (len(payload_data) - self.tick_size)
 		tick, value = struct.unpack(self.tick_format + type_format, payload_data)
-		record = LsrProtocolRecord(tick=tick, c_type=type, value=value)
+		record = LsrProtocolRecord(tick, type, value)
 		logger.debug("Decoded/Received record : %s from %s" % (record, str(binascii.hexlify(payload_data))))
 		return record

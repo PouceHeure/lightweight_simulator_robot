@@ -30,9 +30,9 @@
 // new code implicated a new specialization ! 
 #define CODE_TYPE_ERROR -1
 #define CODE_TYPE_NO_DATA 0
-#define CODE_TYPE_INT 1
+#define CODE_TYPE_INT 3
 #define CODE_TYPE_LONG 2
-#define CODE_TYPE_UINT 3 
+#define CODE_TYPE_UINT 1 
 #define CODE_TYPE_ULONG 4
 #define CODE_TYPE_STRING 6
 #define CODE_TYPE_CHARSTR 7

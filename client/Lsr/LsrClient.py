@@ -24,12 +24,13 @@ class LsrClient:
 		self.timeout = _timeout
 		self.recorders = {}
 		self.lsr_parser = LsrProtocolParser()
-
+		self.is_running = False
 		self.check_connection()
 
 	def check_connection(self):
 		"""Check if the remote LSR server is available
 		"""
+		return True #implement ping on server
 		logger.info("Checking connection with %s:%d ..." % (self.host, self.port))
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
 			sock.connect((self.host, self.port))
@@ -104,22 +105,31 @@ class LsrClient:
 		recorder = self.recorders[recorder_name]
 		record = self.get_record(recorder_name)
 		while record is not None:
-			record = self.get_record(recorder_name)
 			recorder.call_callbacks(record)
+			record = self.get_record(recorder_name)
 		return
 
-	def run(self):
-		"""Run all recorders on several threads
+	def run_foreground(self):
+		"""Run all recorders on several threads in foreground (blocking)
 		"""
+		self.is_running = True
 		threads = []
 		for recorder_name in self.recorders.keys(): #Build all threads
-			threads.append(threading.Thread(target=self.run_recorder, args=(recorder_name,)))
+			threads.append(threading.Thread(target=self.run_recorder, args=(recorder_name,), name=recorder_name))
 
 		for thread in threads: #Start all threads
 			thread.start()
 
 		for thread in threads: #Wait all threads to finish
 			thread.join()
+		self.is_running = False
+
+	def run_background(self):
+		"""Run all recorders on several threads in background (non-blocking)
+		"""
+		thread_root = threading.Thread(target=self.run_foreground, name=b"root")
+		thread_root.daemon = True
+		thread_root.start()
 
 	def close(self, recorder_name):
 		"""Close a connection to the remote server

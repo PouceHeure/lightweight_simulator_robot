@@ -354,7 +354,7 @@ int main(int argc,char** argv){
     scheduler->attachMode(Mode::automatic);
     scheduler->attachBoard(board);
 
-    Server* server = new Server(12345,"192.168.43.75");
+    Server* server = new Server(12345,"127.0.0.1");
 
     auto callbackWorldDisplay = boost::bind(worldDisplay,boost::ref(world_perception),NB_LINES,NB_COLS);
     scheduler->attachCallback(callbackWorldDisplay);
@@ -364,10 +364,9 @@ int main(int argc,char** argv){
         robotinfos.push_back(addRobot(scheduler,world_perception,counter,2));
         counter++;
     }
-
-    // int a = 3;
-    // RecorderServer<int>* recorder_ultrasonic = new RecorderServer<int>(server,"r_test_int",1,&a);//robotinfos.at(0)->robot->getUltrasonicValue());
-    // scheduler->attachRecorder(recorder_ultrasonic);
+    
+    RecorderServer<int>* recorder_ultrasonic = new RecorderServer<int>(server,"r_test_int",1,robotinfos.at(0)->robot->getUltrasonicValue());
+    scheduler->attachRecorder(recorder_ultrasonic);
 
     auto recorder_callback = boost::bind(&callbackRecorer,_1,_2,&robotinfos);
     RecorderFile<float>* recorder = new RecorderFile<float>(10,"test.csv",recorder_callback);

@@ -362,7 +362,7 @@ int main(int argc,char** argv){
 
     std::string bonjour = "bonjour";
 
-    Server* server = new Server(12345,"192.168.43.75");
+    Server* server = new Server(12345,"127.0.0.1");
     RecorderServer<float>* recorder_server = new RecorderServer<float>(server,"r_test_float",1,recorder_callback);
     scheduler->attachRecorder(recorder_server);
 

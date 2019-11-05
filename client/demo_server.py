@@ -19,27 +19,27 @@ def run_server(host, port):
 		s.listen()
 		conn, addr = s.accept()
 		with conn:
-			logging.info('Connected by %s' % addr[0])
+			print('Connected by %s' % addr[0])
 
 			header = lsr_parser.header_from_rawdata(conn.recv(lsr_parser.header_size))
 			record = lsr_parser.record_from_rawdata(conn.recv(header.data_size), header.data_type)
-			logging.info('PING : %s' % record)
+			print('PING : %s' % record)
 			conn.send(lsr_parser.build_ping_packet(reference=record.value)[0])
-			logging.info('Disconnected')
+			print('Disconnected')
 		conn, addr = s.accept()
 		with conn:
-			logging.info('Connected by %s' % addr[0])
+			print('Connected by %s' % addr[0])
 			
 			header = lsr_parser.header_from_rawdata(conn.recv(lsr_parser.header_size))
 			record = lsr_parser.record_from_rawdata(conn.recv(header.data_size), header.data_type)
-			logging.info('Requested recorder : %s' % record.value.decode('utf-8'))
+			print('Requested recorder : %s' % record.value.decode('utf-8'))
 			tick = 0
 			while tick < 20:
 					rand = randint(0, 10)
 					conn.send(lsr_parser.build_packet(rand, tick, ctypes.c_int))
 					time.sleep(1/FREQUENCY)
 					tick += 1
-			logging.info('Disconnected')
+			print('Disconnected')
 
 if __name__ == '__main__':
 	logger = logging.getLogger('Lsr').setLevel(logging.DEBUG)
