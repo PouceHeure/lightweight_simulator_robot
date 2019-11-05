@@ -2,7 +2,7 @@
 #include "communication/handle_communication.hpp"
 
 #include "env/board.hpp"
-#include "scheduler.hpp"
+#include "scheduler/scheduler.hpp"
 #include "element/resource.hpp"
 #include "element/element.hpp"
 #include "element/wall.hpp"
@@ -157,7 +157,6 @@ void callbackRobotMove(RobotInfo* robotInfo){
         }
 
         if(map_scores.size() != 0){
-            int choice = std::rand()%2;
             if(scores == 0){
                 int number_possibility = std::rand() % possibility.size();
                 move_instruction.direction = possibility.at(number_possibility);
@@ -180,7 +179,6 @@ void callbackRobotMove(RobotInfo* robotInfo){
                 case west:
                     robotInfo->position.appendY(-1);
                     break;
-
             }
             robotInfo->robot->addInstruction(move_instruction);
         }else{
@@ -354,7 +352,7 @@ int main(int argc,char** argv){
     scheduler->attachMode(Mode::automatic);
     scheduler->attachBoard(board);
 
-    Server* server = new Server(12345,"192.168.43.75");
+    Server* server = new Server(12345,"localhost");
 
     auto callbackWorldDisplay = boost::bind(worldDisplay,boost::ref(world_perception),NB_LINES,NB_COLS);
     scheduler->attachCallback(callbackWorldDisplay);
@@ -364,10 +362,9 @@ int main(int argc,char** argv){
         robotinfos.push_back(addRobot(scheduler,world_perception,counter,2));
         counter++;
     }
-
-    // int a = 3;
-    // RecorderServer<int>* recorder_ultrasonic = new RecorderServer<int>(server,"r_test_int",1,&a);//robotinfos.at(0)->robot->getUltrasonicValue());
-    // scheduler->attachRecorder(recorder_ultrasonic);
+ 
+    RecorderServer<int>* recorder_ultrasonic = new RecorderServer<int>(server,"r_test_int",1,robotinfos.at(0)->robot->getUltrasonicValue());
+    scheduler->attachRecorder(recorder_ultrasonic);
 
     auto recorder_callback = boost::bind(&callbackRecorer,_1,_2,&robotinfos);
     RecorderFile<float>* recorder = new RecorderFile<float>(10,"test.csv",recorder_callback);

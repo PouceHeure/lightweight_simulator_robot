@@ -2,7 +2,6 @@
 #include "utils/point2D.hpp"
 
 
-
 class Ultrasound: public PhysicalPhenomenon {
     private: 
     

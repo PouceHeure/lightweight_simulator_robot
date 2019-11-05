@@ -1,5 +1,5 @@
 #include "env/board.hpp"
-#include "scheduler.hpp"
+#include "scheduler/scheduler.hpp"
 #include "element/element.hpp"
 #include "element/wall.hpp"
 #include "env/cell.hpp"

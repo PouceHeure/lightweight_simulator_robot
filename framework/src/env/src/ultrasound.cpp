@@ -1,7 +1,7 @@
 #include "env/ultrasound.hpp"
 #include "element/wall.hpp"
 
-Ultrasound::Ultrasound(Direction _direction,Point2D<int> _from):PhysicalPhenomenon(){
+/*Ultrasound::Ultrasound(Direction _direction,Point2D<int> _from):PhysicalPhenomenon(){
     this->direction = _direction;
     this->from = _from;
 }
@@ -12,4 +12,4 @@ void Ultrasound::Apply(){
     while(dynamic_cast<Wall*>(&current_element) == nullptr){
             
     }
-}
+}*/

@@ -25,7 +25,6 @@ int Board<Cell>::spreadSignal(Direction direction,Point2D<int> emission_point, P
         return 0;
     }
     return 1 + spreadSignal(direction,emission_point,current_point);
-
 }
 
 
@@ -93,7 +92,7 @@ std::vector<std::vector<Cell*>> Board<Cell>::spreadDetection(int radius,Point2D<
         elements.push_back(v_cols_ptr);
     }
 
-    //update content 
+    //update content
 
     int i_elements = 0;
     int j_elements = 0;

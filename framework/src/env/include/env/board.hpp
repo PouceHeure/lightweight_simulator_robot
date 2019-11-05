@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 
 /**
  * @file board.hpp
@@ -6,13 +6,13 @@
  * @brief Definition Board class 
  * @version 0.1
  * @date 2019-10-31
- */
+ */ 
 
-#include "utils/point2D.hpp"
-#include "element/element.hpp"
 #include "env/cell.hpp"
 #include "env/physic.hpp"
+#include <utils/point2D.hpp>
 #include "element/unknown.hpp"
+#include "element/element.hpp"
 
 #include <iostream>
 #include <vector>
@@ -149,7 +149,7 @@ class Board{
          */
         void updateAttractifScore(T* value);
 
-        /**
+        /** 
          * @brief Apply attractif methof of each element 
          * 
          */

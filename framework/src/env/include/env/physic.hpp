@@ -1,6 +1,6 @@
 #pragma once 
 
-#include "env/board.hpp"
+//#include "env/board.hpp"
 #include "element/element.hpp"
 
 enum Direction {

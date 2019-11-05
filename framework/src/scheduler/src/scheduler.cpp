@@ -1,7 +1,7 @@
 #include <unistd.h>
 #include <iostream>
 
-#include "scheduler.hpp"
+#include "scheduler/scheduler.hpp"
 
 unsigned int Scheduler::TIME_SLEEP_MS = 30; 
 

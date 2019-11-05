@@ -8,9 +8,7 @@ class Container : public Element {
         static const char REPR = 'X';
         static const bool IS_TRAVERSABLE = false;
 
-        
         Container();
-
         virtual char repr();
         virtual bool getIsTraversable();
 };

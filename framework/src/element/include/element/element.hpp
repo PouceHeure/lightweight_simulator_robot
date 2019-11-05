@@ -8,8 +8,8 @@
  * @date 2019-10-31
  */
 
-#include<string>
-#include<boost/function.hpp>
+#include <string>
+#include <boost/function.hpp>
 
 /**
  * @brief Defines set of objects that can be  

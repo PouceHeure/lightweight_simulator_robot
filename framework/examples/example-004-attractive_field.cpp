@@ -2,7 +2,7 @@
 #include "communication/handle_communication.hpp"
 
 #include "env/board.hpp"
-#include "scheduler.hpp"
+#include "scheduler/scheduler.hpp"
 #include "element/resource.hpp"
 #include "element/element.hpp"
 #include "element/wall.hpp"

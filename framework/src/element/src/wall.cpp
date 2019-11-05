@@ -1,6 +1,5 @@
 #include "element/wall.hpp"
 
-
 Wall::Wall():Element(){
 
 }
