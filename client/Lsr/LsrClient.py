@@ -24,43 +24,33 @@ class LsrClient:
 		self.timeout = _timeout
 		self.recorders = {}
 		self.lsr_parser = LsrProtocolParser()
-		self.is_running = False
+		self.isrunning = False
 		self.check_connection()
 
 	def check_connection(self):
-		"""Check if the remote LSR server is available
+		"""Check if the remote LSR server is available, you can also use the ping functionality
 		"""
-		return True #implement ping on server
 		logger.info("Checking connection with %s:%d ..." % (self.host, self.port))
 		with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
-			sock.connect((self.host, self.port))
-			ping_packet, reference = self.lsr_parser.build_ping_packet()
-			sock.send(ping_packet)
-			
-			sock.settimeout(self.timeout)
-			header_data = sock.recv(self.lsr_parser.header_size)
-			parsed_header = self.lsr_parser.header_from_rawdata(header_data)
-			sock.settimeout(self.timeout)
-			payload_data = sock.recv(parsed_header.data_size)
-			record = self.lsr_parser.record_from_rawdata(payload_data, parsed_header.data_type)
-
-		if not self.lsr_parser.check_ping_packet(record, reference):
-			raise Exception("Network error : %s:%d didn't replied to ping (request = %d, answer = %d)." % (self.host, self.port, reference, record.value))
+			result = sock.connect_ex((self.host, self.port))
+			sock.close()
+		if result != 0:
+			raise Exception("Network error : Connection to %s:%d failed !" % (self.host, self.port))
 		else:
 			logger.info("Connection is OK !")
 
 	def add_recorder(self, recorder_name):
 		"""Add a recorder to the Lsr client
 		"""
-		logger.info("Adding recorder <%s> ..." % recorder_name.decode('utf-8'))
+		logger.info("Adding recorder %s ..." % recorder_name)
 		sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		sock.connect((self.host, self.port))
-		auth_packet = self.lsr_parser.build_authentication_packet(recorder_name)
+		auth_packet = self.lsr_parser.build_authentication_packet(recorder_name.encode('utf-8'))
 		sock.send(auth_packet)
 		self.recorders[recorder_name] = LsrRecorder(recorder_name, sock)
 		if self.get_record(recorder_name) == None:
 			raise Exception("Authentification failed : %s is not an available recorder." % recorder_name)
-		logger.info("Successfully added recorder <%s> !" % recorder_name.decode('utf-8'))
+		logger.info("Successfully added recorder %s !" % recorder_name)
 
 	def get_record(self, recorder_name):
 		"""Get a record from the choosen recorder on the server
@@ -112,7 +102,7 @@ class LsrClient:
 	def run_foreground(self):
 		"""Run all recorders on several threads in foreground (blocking)
 		"""
-		self.is_running = True
+		self.isrunning = True
 		threads = []
 		for recorder_name in self.recorders.keys(): #Build all threads
 			threads.append(threading.Thread(target=self.run_recorder, args=(recorder_name,), name=recorder_name))
@@ -122,7 +112,12 @@ class LsrClient:
 
 		for thread in threads: #Wait all threads to finish
 			thread.join()
-		self.is_running = False
+		self.isrunning = False
+
+	def is_running(self):
+		"""Return True if the server is running
+		"""
+		return self.isrunning
 
 	def run_background(self):
 		"""Run all recorders on several threads in background (non-blocking)
@@ -135,7 +130,7 @@ class LsrClient:
 		"""Close a connection to the remote server
 		"""
 		self.recorders[recorder_name].socket.close()
-		logger.info("Disconnected recorder %s !" % recorder_name.decode('utf-8'))
+		logger.info("Disconnected recorder %s !" % recorder_name)
 
 	def finish(self):
 		"""Close all connections to the remote server
