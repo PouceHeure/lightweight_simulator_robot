@@ -4,10 +4,10 @@ import ctypes
 import time
 import logging
 from random import randint
-from LsrUI.LsrProtocol import LsrProtocolParser
+from Lsr import LsrProtocolParser
 
 HOST = '127.0.0.1'
-PORT = 65432
+PORT = 12345
 
 FREQUENCY = 50 #high frequency
 #FREQUENCY = 10 #low frequency
@@ -24,7 +24,7 @@ def run_server(host, port):
 			record = lsr_parser.record_from_rawdata(conn.recv(header.data_size), header.data_type)
 			logging.info('Requested recorder : %s' % record.value.decode('utf-8'))
 			tick = 0
-			while True:
+			while tick < 20:
 					rand = randint(0, 10)
 					conn.send(lsr_parser.build_packet(rand, tick, ctypes.c_int))
 					time.sleep(1/FREQUENCY)

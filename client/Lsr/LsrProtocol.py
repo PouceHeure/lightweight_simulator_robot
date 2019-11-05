@@ -1,6 +1,10 @@
 #!/usr/bin/python3
 import struct
+import binascii
 from ctypes import c_byte, c_short, c_int, c_long, c_ubyte, c_ushort, c_uint, c_ulong, c_float, c_double, c_char_p
+from .LsrLogger import init_logger
+
+logger = init_logger(__name__)
 
 class LsrProtocolRecord:
 	"""Simple wrapper for LSR records (from LSR recorders)
@@ -75,7 +79,9 @@ class LsrProtocolParser:
 	def rawdata_from_header(self, header):
 		"""Convert LsrProtocolHeader to raw data (before sending it to server)
 		"""
-		return struct.pack(self.header_format, header.data_type, header.data_size)
+		raw_header = struct.pack(self.header_format, header.data_type, header.data_size)
+		logger.debug("Encoded header : %s from %s" % (str(binascii.hexlify(raw_header)), header))
+		return raw_header
 
 	def rawdata_from_record(self, record):
 		"""Convert LsrProtocolRecord to raw data (before sending it to server)
@@ -84,13 +90,17 @@ class LsrProtocolParser:
 		type_format = type._type_
 		if type == c_char_p:
 			type_format = "%ds" % len(record.value)
-		return struct.pack(self.tick_format + type_format, record.tick, record.value)
+		raw_record = struct.pack(self.tick_format + type_format, record.tick, record.value)
+		logger.debug("Encoded record : %s from %s" % (str(binascii.hexlify(raw_record)), record))
+		return raw_record
 
 	def header_from_rawdata(self, header_data):
 		"""Convert raw data to LsrProtocolHeader (after receiving it from the server)
 		"""
 		data_type, data_size = struct.unpack(self.header_format, header_data)
-		return LsrProtocolHeader(data_size=data_size, data_type=data_type)
+		header = LsrProtocolHeader(data_size=data_size, data_type=data_type)
+		logger.debug("Decoded header : %s from %s" % (header, str(binascii.hexlify(header_data))))
+		return header
 
 	def record_from_rawdata(self, payload_data, data_type):
 		"""Convert raw data to LsrProtocolRecord (after receiving it from the server)
@@ -100,6 +110,6 @@ class LsrProtocolParser:
 		if type == c_char_p:
 			type_format = "%ds" % (len(payload_data) - self.tick_size)
 		tick, value = struct.unpack(self.tick_format + type_format, payload_data)
-		return LsrProtocolRecord(tick=tick, c_type=type, value=value)
-
-
+		record = LsrProtocolRecord(tick=tick, c_type=type, value=value)
+		logger.debug("Decoded record : %s from %s" % (record, str(binascii.hexlify(payload_data))))
+		return record
