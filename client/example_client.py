@@ -40,12 +40,12 @@ def run_client(host, port, recorders):
 
 def init_args():
 	parser = argparse.ArgumentParser(description='LSR Client || 0xUKN & PoussPouss')
-	parser.add_argument('h', help='Lsr Server Hostname/IP')
-	parser.add_argument('p', help='Lsr Server port', type=int)
-	parser.add_argument('-f', help='Recorders file', default="recorders.list")
+	parser.add_argument('host', help='Lsr Server Hostname/IP')
+	parser.add_argument('port', help='Lsr Server port', type=int)
+	parser.add_argument('--file', help='Recorders file', default="recorders.list")
 	args = parser.parse_args()
-	out = [args.h, args.p]
-	with open(args.f, 'r') as file:
+	out = [args.host, args.port]
+	with open(args.file, 'r') as file:
 		recorders = file.read().splitlines()
 		recorders = list(filter(None, recorders))
 	out.append(recorders)
