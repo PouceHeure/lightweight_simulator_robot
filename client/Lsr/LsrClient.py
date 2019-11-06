@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 import socket
+import threading
 from .LsrProtocol import LsrProtocolParser
 from .LsrRecorder import LsrRecorder
 from .LsrLogger import init_logger
@@ -23,6 +24,7 @@ class LsrClient:
 		self.timeout = _timeout
 		self.recorders = {}
 		self.lsr_parser = LsrProtocolParser()
+
 		self.check_connection()
 
 	def check_connection(self):
@@ -88,8 +90,36 @@ class LsrClient:
 			record = self.get_record(recorder_name)
 		return
 
+	def bind(self, recorder_name, callback_function, args):
+		"""Add a callback to the specified recorder (function first, and then arguments as a dict)
+		
+		The record argument is internal only, and can be ignored by the user
+		"""
+		recorder = self.recorders[recorder_name]
+		recorder.add_callback(callback_function, args)
+
+	def run_recorder(self, recorder_name):
+		"""Get an iterator object which iterates through all the records from the choosen recorder on the server, and execute all the previously specified callbacks for this recorder
+		"""
+		recorder = self.recorders[recorder_name]
+		record = self.get_record(recorder_name)
+		while record is not None:
+			record = self.get_record(recorder_name)
+			recorder.call_callbacks(record)
+		return
+
 	def run(self):
-		pass
+		"""Run all recorders on several threads
+		"""
+		threads = []
+		for recorder_name in self.recorders.keys(): #Build all threads
+			threads.append(threading.Thread(target=self.run_recorder, args=(recorder_name,)))
+
+		for thread in threads: #Start all threads
+			thread.start()
+
+		for thread in threads: #Wait all threads to finish
+			thread.join()
 
 	def close(self, recorder_name):
 		"""Close a connection to the remote server

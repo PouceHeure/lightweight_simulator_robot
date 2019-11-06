@@ -14,9 +14,24 @@ class LsrRecorder:
 	
 		You need a recorder name and a socket to build a recorder
 		"""
-		self.naeme = _name #pas forcément utile
+		self.name = _name
 		self.socket = _socket
 		self.callbacks = [] #_callbacks = [(callback, kwargs), (callback, kwargs), ...]
+
+	def add_callback(self, callback_function, args):
+		"""Add a callback to the specified recorder (function first, and then arguments as a dict)
+		
+		The record argument is internal only, and can be ignored by the user
+		"""
+		self.callbacks.append((callback_function, args))
+	
+	def call_callbacks(self, record):
+		for callback in self.callbacks:
+			func = callback[0]
+			args = callback[1]
+			args["record"] = record
+			func(**args)
+			args.pop("record") #delete record from args
 
 """
 On stocke plein de LsrRecorder dans un dict de la classe LsrClient
