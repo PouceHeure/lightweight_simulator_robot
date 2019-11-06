@@ -20,6 +20,16 @@ def run_server(host, port):
 		conn, addr = s.accept()
 		with conn:
 			logging.info('Connected by %s' % addr[0])
+
+			header = lsr_parser.header_from_rawdata(conn.recv(lsr_parser.header_size))
+			record = lsr_parser.record_from_rawdata(conn.recv(header.data_size), header.data_type)
+			logging.info('PING : %s' % record)
+			conn.send(lsr_parser.build_ping_packet(reference=record.value)[0])
+			logging.info('Disconnected')
+		conn, addr = s.accept()
+		with conn:
+			logging.info('Connected by %s' % addr[0])
+			
 			header = lsr_parser.header_from_rawdata(conn.recv(lsr_parser.header_size))
 			record = lsr_parser.record_from_rawdata(conn.recv(header.data_size), header.data_type)
 			logging.info('Requested recorder : %s' % record.value.decode('utf-8'))
@@ -29,8 +39,8 @@ def run_server(host, port):
 					conn.send(lsr_parser.build_packet(rand, tick, ctypes.c_int))
 					time.sleep(1/FREQUENCY)
 					tick += 1
-		logging.info('Disconnected')
+			logging.info('Disconnected')
 
 if __name__ == '__main__':
-	logging.basicConfig(format='[%(levelname)s] %(message)s', level=logging.INFO)
+	logger = logging.getLogger('Lsr').setLevel(logging.DEBUG)
 	run_server(HOST, PORT)

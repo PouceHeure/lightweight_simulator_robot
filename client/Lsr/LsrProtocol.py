@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import struct
 import binascii
+import random
 from ctypes import c_byte, c_short, c_int, c_long, c_ubyte, c_ushort, c_uint, c_ulong, c_float, c_double, c_char_p
 from .LsrLogger import init_logger
 
@@ -64,6 +65,18 @@ class LsrProtocolParser:
 		"""Build authentication packet from a recorder name
 		"""
 		return self.build_packet(recorder_name, 0, c_char_p)
+
+	def build_ping_packet(self, reference = None):
+		"""Build ping packet or build answer to ping packet
+		"""
+		if reference == None:
+			reference = random.randint(0x00, 0xff)
+		return self.build_packet(reference, reference, c_ubyte), reference
+
+	def check_ping_packet(self, record, reference):
+		"""Verify ping packet integrity
+		"""
+		return record.value == reference and record.c_type == c_ubyte
 	
 	def build_packet(self, value, tick, c_type):
 		"""Build data packet from value, tick, and ctype
@@ -80,7 +93,7 @@ class LsrProtocolParser:
 		"""Convert LsrProtocolHeader to raw data (before sending it to server)
 		"""
 		raw_header = struct.pack(self.header_format, header.data_type, header.data_size)
-		logger.debug("Encoded header : %s from %s" % (str(binascii.hexlify(raw_header)), header))
+		logger.debug("Encoded/Sent header : %s from %s" % (str(binascii.hexlify(raw_header)), header))
 		return raw_header
 
 	def rawdata_from_record(self, record):
@@ -91,7 +104,7 @@ class LsrProtocolParser:
 		if type == c_char_p:
 			type_format = "%ds" % len(record.value)
 		raw_record = struct.pack(self.tick_format + type_format, record.tick, record.value)
-		logger.debug("Encoded record : %s from %s" % (str(binascii.hexlify(raw_record)), record))
+		logger.debug("Encoded/Sent record : %s from %s" % (str(binascii.hexlify(raw_record)), record))
 		return raw_record
 
 	def header_from_rawdata(self, header_data):
@@ -99,7 +112,7 @@ class LsrProtocolParser:
 		"""
 		data_type, data_size = struct.unpack(self.header_format, header_data)
 		header = LsrProtocolHeader(data_size=data_size, data_type=data_type)
-		logger.debug("Decoded header : %s from %s" % (header, str(binascii.hexlify(header_data))))
+		logger.debug("Decoded/Received header : %s from %s" % (header, str(binascii.hexlify(header_data))))
 		return header
 
 	def record_from_rawdata(self, payload_data, data_type):
@@ -111,5 +124,5 @@ class LsrProtocolParser:
 			type_format = "%ds" % (len(payload_data) - self.tick_size)
 		tick, value = struct.unpack(self.tick_format + type_format, payload_data)
 		record = LsrProtocolRecord(tick=tick, c_type=type, value=value)
-		logger.debug("Decoded record : %s from %s" % (record, str(binascii.hexlify(payload_data))))
+		logger.debug("Decoded/Received record : %s from %s" % (record, str(binascii.hexlify(payload_data))))
 		return record
