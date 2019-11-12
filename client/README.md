@@ -32,4 +32,4 @@ lsr.finish()
 `lsr.bind(<recorder_name>, <callback function>, <callback args>)` : bind a callback function to a specific recorder\
 `lsr.run_background()` : run the client\
 `lsr.is_running()` : wait the client to exit\
-`lsr.finish()` : close the connexion\
+`lsr.finish()` : close the connexion
