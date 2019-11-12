@@ -27,9 +27,9 @@ while lsr.is_running():
 lsr.finish()
 ```
 
-`LsrClient(<host>, <port>)` : connect to the Lsr server
-`lsr.add_recorder(<recorder_name>)` : listen to a specific recorder
-`lsr.bind(<recorder_name>, <callback function>, <callback args>)` : bind a callback function to a specific recorder
-`lsr.run_background()` : run the client
-`lsr.is_running()` : wait the client to exit
-`lsr.finish()` : close the connexion
+`LsrClient(<host>, <port>)` : connect to the Lsr server\
+`lsr.add_recorder(<recorder_name>)` : listen to a specific recorder\
+`lsr.bind(<recorder_name>, <callback function>, <callback args>)` : bind a callback function to a specific recorder\
+`lsr.run_background()` : run the client\
+`lsr.is_running()` : wait the client to exit\
+`lsr.finish()` : close the connexion\
